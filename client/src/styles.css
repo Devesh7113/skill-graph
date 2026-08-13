@@ -1,0 +1,511 @@
+:root {
+  color: #152018;
+  background: #f5f7f2;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(54, 96, 72, 0.10), transparent 32rem),
+    linear-gradient(315deg, rgba(34, 122, 150, 0.12), transparent 34rem),
+    #f5f7f2;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1440px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 36px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 800;
+  color: #10251b;
+}
+
+.topbar p {
+  margin: 6px 0 0;
+  color: #52645a;
+  max-width: 640px;
+}
+
+.database-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  border: 1px solid #bad0c1;
+  background: #ffffff;
+  color: #27563e;
+  padding: 10px 14px;
+  border-radius: 999px;
+  box-shadow: 0 8px 22px rgba(29, 54, 39, 0.08);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.85fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(0, 1.5fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dbe4dc;
+  border-radius: 8px;
+  box-shadow: 0 18px 55px rgba(35, 56, 43, 0.10);
+}
+
+.candidate-panel,
+.summary-panel,
+.recommendations-panel,
+.detail-panel {
+  padding: 22px;
+}
+
+.panel-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f6247;
+  font-weight: 750;
+}
+
+.candidate-main {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  background: #173f2c;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 850;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+.candidate-main h1,
+.job-detail-header h2 {
+  margin-bottom: 2px;
+  color: #10251b;
+}
+
+.candidate-main p,
+.job-detail-header p,
+.section-title p,
+.summary-text {
+  color: #5b6b62;
+}
+
+.muted-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #6a766f;
+  font-size: 14px;
+}
+
+.summary-text {
+  max-width: 760px;
+  margin: 18px 0;
+}
+
+.skill-cloud,
+.skill-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-cloud span,
+.skill-stack span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eef5ef;
+  color: #254d39;
+  font-size: 14px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.metric {
+  border: 1px solid #d9e3dc;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfa;
+}
+
+.metric strong {
+  display: block;
+  font-size: 28px;
+  color: #143827;
+}
+
+.metric span,
+.top-match span,
+.path-node span {
+  color: #68766d;
+  font-size: 13px;
+}
+
+.top-match {
+  border-left: 4px solid #3e7d5b;
+  background: #eef6f1;
+  padding: 14px 16px;
+  border-radius: 6px;
+}
+
+.top-match strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+.top-match p {
+  margin: 4px 0 0;
+  color: #52645a;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.section-title p {
+  margin: 6px 0 0;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 10px;
+}
+
+.job-row {
+  width: 100%;
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 58px 1fr 22px;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  border: 1px solid #dae4dd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17251d;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.job-row:hover,
+.job-row.active {
+  transform: translateY(-1px);
+  border-color: #3e7d5b;
+  box-shadow: 0 12px 28px rgba(31, 71, 49, 0.12);
+}
+
+.score-ring {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, #ffffff 70%, transparent 72%),
+    conic-gradient(#3e7d5b var(--score), #e3eae5 0);
+}
+
+.score-ring span {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.job-row-copy {
+  min-width: 0;
+}
+
+.job-row-copy strong {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.job-row-copy span {
+  display: block;
+  color: #647168;
+  font-size: 14px;
+}
+
+.detail-panel {
+  min-height: 680px;
+}
+
+.job-detail-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  border-bottom: 1px solid #dce5de;
+  padding-bottom: 18px;
+}
+
+.large-score {
+  width: 110px;
+  min-height: 94px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 8px;
+  background: #173f2c;
+  color: white;
+}
+
+.large-score strong {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.large-score span {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.gap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.skill-column {
+  border-radius: 8px;
+  border: 1px solid #dce5de;
+  padding: 14px;
+}
+
+.skill-column.good {
+  background: #f0f8f2;
+}
+
+.skill-column.missing {
+  background: #fff8ee;
+}
+
+.skill-column-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 750;
+  margin-bottom: 12px;
+}
+
+.skill-column.good .skill-column-title {
+  color: #2d6d46;
+}
+
+.skill-column.missing .skill-column-title {
+  color: #9a5d12;
+}
+
+.skill-column.missing .skill-stack span {
+  background: #fff0d9;
+  color: #7d4c10;
+}
+
+.empty-chip {
+  background: #f2f2f0 !important;
+  color: #727a74 !important;
+}
+
+.path-section {
+  margin-top: 20px;
+}
+
+.path-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.graph-path {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #dce5de;
+  background: #fbfcfa;
+}
+
+.path-node {
+  flex: 0 0 132px;
+  min-height: 70px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  border: 1px solid #cddbd1;
+  border-radius: 8px;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.path-node strong {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.path-edge {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  color: #51715f;
+}
+
+.path-edge span {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  border: 1px dashed #c7d4cb;
+  border-radius: 8px;
+  color: #6d7a72;
+  background: #fafbf9;
+  text-align: center;
+}
+
+.center-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: #183322;
+}
+
+.center-screen h1 {
+  margin-bottom: 0;
+}
+
+.center-screen p {
+  color: #596961;
+  margin-bottom: 0;
+}
+
+.center-screen.error {
+  color: #8a251d;
+}
+
+.center-screen.error span {
+  color: #6a5954;
+}
+
+.spin {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero-grid,
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    width: min(100% - 24px, 1440px);
+    padding-top: 18px;
+  }
+
+  .topbar,
+  .candidate-main,
+  .job-detail-header {
+    flex-direction: column;
+  }
+
+  .database-pill {
+    align-self: flex-start;
+  }
+
+  .metric-grid,
+  .gap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .job-row {
+    grid-template-columns: 52px 1fr;
+  }
+
+  .job-row > svg {
+    display: none;
+  }
+}
