@@ -46,6 +46,8 @@ graph LR
 - Ranked job recommendations with match percentage.
 - Job detail view with matched skills, missing skills, and company context.
 - "Why this job?" traversal that shows the graph path behind a recommendation.
+- Add/remove candidate skills and refresh recommendations live.
+- Add a new job for an existing company with required skills.
 - Graceful database error state if CognoDB is unreachable.
 
 ## Tech Stack

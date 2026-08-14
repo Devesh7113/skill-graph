@@ -154,11 +154,113 @@ async function getWhyPath(candidateId, jobId) {
   }));
 }
 
+async function getAllSkills() {
+  const records = await runQuery(
+    `
+    MATCH (skill:Skill)-[:BELONGS_TO]->(category:Category)
+    RETURN skill {.*, category: category.name} AS skill
+    ORDER BY category.name, skill.name
+    `
+  );
+
+  return records.map((record) => toNative(record.get("skill")));
+}
+
+async function getAllCompanies() {
+  const records = await runQuery(
+    `
+    MATCH (company:Company)
+    RETURN company
+    ORDER BY company.name
+    `
+  );
+
+  return records.map((record) => nodeProps(record.get("company")));
+}
+
+async function addCandidateSkill(candidateId, skillId) {
+  const records = await runQuery(
+    `
+    MATCH (candidate:Candidate {id: $candidateId})
+    MATCH (skill:Skill {id: $skillId})
+    MERGE (candidate)-[:HAS_SKILL]->(skill)
+    RETURN skill
+    `,
+    { candidateId, skillId }
+  );
+
+  if (records.length === 0) return null;
+  return nodeProps(records[0].get("skill"));
+}
+
+async function removeCandidateSkill(candidateId, skillId) {
+  const records = await runQuery(
+    `
+    MATCH (:Candidate {id: $candidateId})-[relationship:HAS_SKILL]->(skill:Skill {id: $skillId})
+    DELETE relationship
+    RETURN skill
+    `,
+    { candidateId, skillId }
+  );
+
+  if (records.length === 0) return null;
+  return nodeProps(records[0].get("skill"));
+}
+
+async function createJobForCompany(companyId, jobInput) {
+  const jobId = jobInput.title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .concat(`-${Date.now()}`);
+
+  const records = await runQuery(
+    `
+    MATCH (company:Company {id: $companyId})
+    CREATE (job:Job {
+      id: $jobId,
+      title: $title,
+      description: $description,
+      level: $level
+    })
+    MERGE (company)-[:OFFERS]->(job)
+    WITH job, company
+    MATCH (skill:Skill)
+    WHERE skill.id IN $skillIds
+    MERGE (job)-[requires:REQUIRES]->(skill)
+    SET requires.importance = "medium"
+    RETURN job, company, collect(skill) AS requiredSkills
+    `,
+    {
+      companyId,
+      jobId,
+      title: jobInput.title,
+      description: jobInput.description,
+      level: jobInput.level || "Mid",
+      skillIds: jobInput.skillIds
+    }
+  );
+
+  if (records.length === 0) return null;
+
+  return {
+    job: nodeProps(records[0].get("job")),
+    company: nodeProps(records[0].get("company")),
+    requiredSkills: toNative(records[0].get("requiredSkills")).map(nodeProps)
+  };
+}
+
 module.exports = {
   getCandidate,
   getDashboard,
   getRecommendations,
   getJob,
   getSkillGap,
-  getWhyPath
+  getWhyPath,
+  getAllSkills,
+  getAllCompanies,
+  addCandidateSkill,
+  removeCandidateSkill,
+  createJobForCompany
 };

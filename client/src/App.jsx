@@ -10,12 +10,24 @@ import {
   Loader2,
   MapPin,
   Network,
+  Plus,
   Search,
   Sparkles,
   UserRound,
   XCircle
 } from "lucide-react";
-import { getDashboard, getHealth, getJob, getRecommendations, getWhyPath } from "./api";
+import {
+  addCandidateSkill,
+  createCompanyJob,
+  getCompanies,
+  getDashboard,
+  getHealth,
+  getJob,
+  getRecommendations,
+  getSkills,
+  getWhyPath,
+  removeCandidateSkill
+} from "./api";
 
 const CANDIDATE_ID = "devesh";
 
@@ -25,21 +37,36 @@ export function App() {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [selectedJob, setSelectedJob] = useState(null);
   const [whyPath, setWhyPath] = useState([]);
+  const [skills, setSkills] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
+  const [actionMessage, setActionMessage] = useState("");
+
+  async function refreshData(nextSelectedJobId = selectedJobId) {
+    const [dashboardData, recommendationData, skillData, companyData] = await Promise.all([
+      getDashboard(CANDIDATE_ID),
+      getRecommendations(CANDIDATE_ID),
+      getSkills(),
+      getCompanies()
+    ]);
+
+    setDashboard(dashboardData);
+    setRecommendations(recommendationData);
+    setSkills(skillData);
+    setCompanies(companyData);
+
+    const fallbackJobId = recommendationData[0]?.job?.id || null;
+    const stillExists = recommendationData.some((item) => item.job.id === nextSelectedJobId);
+    setSelectedJobId(stillExists ? nextSelectedJobId : fallbackJobId);
+  }
 
   useEffect(() => {
     async function load() {
       try {
         setStatus("loading");
         await getHealth();
-        const [dashboardData, recommendationData] = await Promise.all([
-          getDashboard(CANDIDATE_ID),
-          getRecommendations(CANDIDATE_ID)
-        ]);
-        setDashboard(dashboardData);
-        setRecommendations(recommendationData);
-        setSelectedJobId(recommendationData[0]?.job?.id || null);
+        await refreshData(null);
         setStatus("ready");
       } catch (err) {
         setError(err.message);
@@ -103,6 +130,28 @@ export function App() {
         <SummaryPanel dashboard={dashboard} recommendations={recommendations} />
       </section>
 
+      <ActionPanel
+        dashboard={dashboard}
+        skills={skills}
+        companies={companies}
+        actionMessage={actionMessage}
+        onAddSkill={async (skillId) => {
+          await addCandidateSkill(CANDIDATE_ID, skillId);
+          setActionMessage("Skill added. Recommendations refreshed.");
+          await refreshData(selectedJobId);
+        }}
+        onRemoveSkill={async (skillId) => {
+          await removeCandidateSkill(CANDIDATE_ID, skillId);
+          setActionMessage("Skill removed. Recommendations refreshed.");
+          await refreshData(selectedJobId);
+        }}
+        onCreateJob={async (companyId, job) => {
+          const created = await createCompanyJob(companyId, job);
+          setActionMessage("Job added to the graph. Recommendations refreshed.");
+          await refreshData(created.job.id);
+        }}
+      />
+
       <section className="workspace-grid">
         <Recommendations
           recommendations={recommendations}
@@ -116,6 +165,142 @@ export function App() {
         />
       </section>
     </main>
+  );
+}
+
+function ActionPanel({ dashboard, skills, companies, actionMessage, onAddSkill, onRemoveSkill, onCreateJob }) {
+  return (
+    <section className="action-grid">
+      <SkillManager
+        ownedSkills={dashboard?.skills || []}
+        allSkills={skills}
+        onAddSkill={onAddSkill}
+        onRemoveSkill={onRemoveSkill}
+      />
+      <JobCreator companies={companies} skills={skills} onCreateJob={onCreateJob} />
+      {actionMessage && <div className="action-message">{actionMessage}</div>}
+    </section>
+  );
+}
+
+function SkillManager({ ownedSkills, allSkills, onAddSkill, onRemoveSkill }) {
+  const [skillId, setSkillId] = useState("");
+  const ownedIds = new Set(ownedSkills.map((skill) => skill.id));
+  const availableSkills = allSkills.filter((skill) => !ownedIds.has(skill.id));
+
+  async function handleAdd(event) {
+    event.preventDefault();
+    if (!skillId) return;
+    await onAddSkill(skillId);
+    setSkillId("");
+  }
+
+  return (
+    <article className="panel control-panel">
+      <div className="panel-heading">
+        <UserRound size={20} />
+        <span>Edit Candidate Skills</span>
+      </div>
+      <form className="inline-form" onSubmit={handleAdd}>
+        <select value={skillId} onChange={(event) => setSkillId(event.target.value)}>
+          <option value="">Choose a skill to add</option>
+          {availableSkills.map((skill) => (
+            <option key={skill.id} value={skill.id}>
+              {skill.name} ({skill.category})
+            </option>
+          ))}
+        </select>
+        <button type="submit">
+          <Plus size={16} />
+          Add
+        </button>
+      </form>
+      <div className="editable-chip-list">
+        {ownedSkills.map((skill) => (
+          <button key={skill.id} onClick={() => onRemoveSkill(skill.id)} title={`Remove ${skill.name}`}>
+            {skill.name}
+            <XCircle size={14} />
+          </button>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function JobCreator({ companies, skills, onCreateJob }) {
+  const [companyId, setCompanyId] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState([]);
+
+  useEffect(() => {
+    if (!companyId && companies.length > 0) {
+      setCompanyId(companies[0].id);
+    }
+  }, [companies, companyId]);
+
+  function toggleSkill(skillId) {
+    setSelectedSkills((current) =>
+      current.includes(skillId) ? current.filter((id) => id !== skillId) : [...current, skillId]
+    );
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (!companyId || !title.trim() || !description.trim() || selectedSkills.length === 0) return;
+
+    await onCreateJob(companyId, {
+      title: title.trim(),
+      description: description.trim(),
+      level: "Mid",
+      skillIds: selectedSkills
+    });
+
+    setTitle("");
+    setDescription("");
+    setSelectedSkills([]);
+  }
+
+  return (
+    <article className="panel control-panel">
+      <div className="panel-heading">
+        <Building2 size={20} />
+        <span>Add Company Job</span>
+      </div>
+      <form className="job-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <select value={companyId} onChange={(event) => setCompanyId(event.target.value)}>
+            {companies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
+              </option>
+            ))}
+          </select>
+          <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Job title" />
+        </div>
+        <input
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Short job description"
+        />
+        <div className="skill-picker">
+          {skills.slice(0, 24).map((skill) => (
+            <button
+              key={skill.id}
+              type="button"
+              className={selectedSkills.includes(skill.id) ? "selected" : ""}
+              onClick={() => toggleSkill(skill.id)}
+            >
+              {skill.name}
+            </button>
+          ))}
+        </div>
+        <button className="primary-action" type="submit">
+          <Plus size={16} />
+          Create Job
+        </button>
+      </form>
+    </article>
   );
 }
 

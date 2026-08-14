@@ -81,6 +81,13 @@ button {
   align-items: start;
 }
 
+.action-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
 .panel {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid #dbe4dc;
@@ -91,8 +98,13 @@ button {
 .candidate-panel,
 .summary-panel,
 .recommendations-panel,
-.detail-panel {
+.detail-panel,
+.control-panel {
   padding: 22px;
+}
+
+.control-panel {
+  min-height: 220px;
 }
 
 .panel-heading {
@@ -162,7 +174,9 @@ p {
 }
 
 .skill-cloud span,
-.skill-stack span {
+.skill-stack span,
+.editable-chip-list button,
+.skill-picker button {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
@@ -171,6 +185,98 @@ p {
   background: #eef5ef;
   color: #254d39;
   font-size: 14px;
+}
+
+.inline-form,
+.job-form,
+.form-row {
+  display: grid;
+  gap: 10px;
+}
+
+.inline-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 16px 0;
+}
+
+.job-form {
+  margin-top: 16px;
+}
+
+.form-row {
+  grid-template-columns: 180px minmax(0, 1fr);
+}
+
+select,
+input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #cbd8d0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17251d;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.inline-form button,
+.primary-action {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: #173f2c;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.editable-chip-list,
+.skill-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editable-chip-list button,
+.skill-picker button {
+  border: 1px solid #d7e2da;
+  cursor: pointer;
+}
+
+.editable-chip-list button {
+  gap: 6px;
+}
+
+.skill-picker {
+  max-height: 112px;
+  overflow: auto;
+  padding: 2px;
+}
+
+.skill-picker button {
+  background: #f6f8f5;
+  color: #415247;
+}
+
+.skill-picker button.selected {
+  background: #173f2c;
+  color: #ffffff;
+  border-color: #173f2c;
+}
+
+.action-message {
+  grid-column: 1 / -1;
+  border-radius: 8px;
+  background: #eaf6ee;
+  color: #285a3d;
+  border: 1px solid #c8dfcf;
+  padding: 10px 14px;
+  font-weight: 700;
 }
 
 .metric-grid {
@@ -475,7 +581,8 @@ p {
 
 @media (max-width: 1100px) {
   .hero-grid,
-  .workspace-grid {
+  .workspace-grid,
+  .action-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -497,7 +604,9 @@ p {
   }
 
   .metric-grid,
-  .gap-grid {
+  .gap-grid,
+  .form-row,
+  .inline-form {
     grid-template-columns: 1fr;
   }
 
