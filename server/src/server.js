@@ -7,31 +7,28 @@ const { errorHandler } = require("./middleware/errorHandler");
 
 const env = getEnv();
 const app = express();
-const allowedOrigins = env.clientOrigin
-  .split(",")
-  .map((origin) => origin.trim().replace(/\/$/, ""))
-  .filter(Boolean);
+const allowedOrigins = [
+  "https://skill-graph-three.vercel.app",
+  ...env.clientOrigin.split(",")
+].map((origin) => origin.trim().replace(/\/$/, ""));
 
-function isAllowedOrigin(origin) {
-  if (!origin) return true;
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      return callback(null, true);
+    }
 
-  const cleanOrigin = origin.replace(/\/$/, "");
-  return allowedOrigins.includes(cleanOrigin) || cleanOrigin.endsWith(".vercel.app");
-}
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  methods: ["GET", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  credentials: false,
+  optionsSuccessStatus: 204
+};
 
-app.use(helmet());
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (isAllowedOrigin(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error(`CORS blocked origin: ${origin}`));
-    },
-    credentials: false
-  })
-);
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
